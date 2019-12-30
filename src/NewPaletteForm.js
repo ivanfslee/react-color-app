@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import classNames from "classnames";
 import { withStyles } from "@material-ui/core/styles";
 import PaletteFormNav from "./PaletteFormNav";
+import ColorPickerForm from "./ColorPickerForm";
 import Drawer from "@material-ui/core/Drawer";
 import Typography from "@material-ui/core/Typography";
 import Divider from "@material-ui/core/Divider";
@@ -83,12 +84,11 @@ class NewPaletteForm extends Component {
         super(props); //can't call this.state without 'super(props)'
         this.state = {
             open: true,
-            currentColor: "teal",
-            newColorName: "",
+            
             colors: this.props.palettes[0].colors,
             
         }
-        this.updateCurrentColor = this.updateCurrentColor.bind(this);
+        
         this.addNewColor = this.addNewColor.bind(this);
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
@@ -108,10 +108,7 @@ class NewPaletteForm extends Component {
             ({ color }) => color !== this.state.currentColor
             )
         );
-
     };
-
-
 
     handleDrawerOpen = () => {
     this.setState({ open: true });
@@ -121,16 +118,10 @@ class NewPaletteForm extends Component {
     this.setState({ open: false });
     };
 
-    updateCurrentColor(newColor) {
-        //sets button color the same as the selected/currentColor 
-        this.setState({currentColor: newColor.hex})
-    }
 
-    addNewColor() {
-        const newColor = {
-            color: this.state.currentColor,
-            name: this.state.newColorName
-        }
+
+    addNewColor(newColor) {
+
         //adds currentColor to this.state.colors array of colors 
         this.setState({colors: [...this.state.colors, newColor], newColorName: ""})
     }
@@ -193,57 +184,26 @@ class NewPaletteForm extends Component {
                 paper: classes.drawerPaper
             }}
             >
-            <div className={classes.drawerHeader}>
-                <IconButton onClick={this.handleDrawerClose}>
-                <ChevronLeftIcon />
-                </IconButton>
-            </div>
-            <Divider />
-            <Typography variant="h4">Design Your Palette</Typography>
-            <div>
-                <Button variant="contained" color="secondary" onClick={this.clearColors}>Clear Palette</Button>
-                <Button 
-                  variant="contained" 
-                  color="primary" 
-                  onClick={this.addRandomColor}
-                  disabled={paletteIsFull}
-                >
-                  Random Color
-                </Button>
-            </div>
-
-            <ChromePicker 
-                color={this.state.currentColor}
-                onChangeComplete={this.updateCurrentColor}
-            />
-            <ValidatorForm onSubmit={this.addNewColor}>
-                <TextValidator 
-                    value={this.state.newColorName} 
-                    name="newColorName"
-                    onChange={this.handleChange}
-                    validators={["required", "isColorNameUnique", "isColorUnique"]}
-                    errorMessages={["This Field Is Required", "Color Name Already Exists", "Color Already Exists"]}
-                />
-
-                <Button 
+              <div className={classes.drawerHeader}>
+                  <IconButton onClick={this.handleDrawerClose}>
+                  <ChevronLeftIcon />
+                  </IconButton>
+              </div>
+              <Divider />
+              <Typography variant="h4">Design Your Palette</Typography>
+              <div>
+                  <Button variant="contained" color="secondary" onClick={this.clearColors}>Clear Palette</Button>
+                  <Button 
                     variant="contained" 
-                    type="submit"
                     color="primary" 
+                    onClick={this.addRandomColor}
                     disabled={paletteIsFull}
-                    style={{
-                        backgroundColor: paletteIsFull 
-                        ? "grey" 
-                        : this.state.currentColor
-                    }}
+                  >
+                    Random Color
+                  </Button>
+              </div>
+              <ColorPickerForm paletteIsFull={paletteIsFull} addNewColor={this.addNewColor} />
 
-                >
-                {paletteIsFull ? "Palette Full" : "Add Color"}
-                    
-                </Button>
-
-            </ValidatorForm>
-
-            
             </Drawer>
 
             <main
